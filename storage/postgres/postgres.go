@@ -15,6 +15,7 @@ type store struct {
 	branch     *BranchRepo
 	stafftarif *StaffTarifRepo
 	staff      *StaffRepo
+	sale       *SaleRepo
 }
 
 func NewConnectionPostgres(cfg *config.Config) (storage.StorageI, error) {
@@ -72,4 +73,13 @@ func (s *store) Staff() storage.StaffRepoI {
 	}
 
 	return s.staff
+}
+
+func (s *store) Sale() storage.SaleRepoI {
+
+	if s.sale == nil {
+		s.sale = NewSaleRepo(s.db)
+	}
+
+	return s.sale
 }

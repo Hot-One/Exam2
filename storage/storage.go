@@ -11,6 +11,7 @@ type StorageI interface {
 	Branch() BranchRepoI
 	StaffTarif() StaffTarifRepoI
 	Staff() StaffRepoI
+	Sale() SaleRepoI
 }
 
 type BranchRepoI interface {
@@ -35,4 +36,12 @@ type StaffRepoI interface {
 	GetList(context.Context, *models.StaffGetListRequest) (*models.StaffGetListResponse, error)
 	Update(context.Context, *models.StaffUpdate) (int64, error)
 	Delete(context.Context, *models.StaffPrimaryKey) (int64, error)
+}
+
+type SaleRepoI interface {
+	Create(context.Context, *models.SaleCreate) (string, error)
+	GetByID(context.Context, *models.SalePrimaryKey) (*models.Sale, error)
+	GetList(context.Context, *models.SaleGetListRequest) (*models.SaleGetListResponse, error)
+	Update(context.Context, *models.SaleUpdate) (int64, error)
+	Delete(context.Context, *models.SalePrimaryKey) (int64, error)
 }

@@ -1,5 +1,3 @@
-
-
 CREATE TABLE sales(
     "id" UUID NOT NULL PRIMARY KEY,
     "branch_id" UUID REFERENCES branch("id") NOT NULL,
