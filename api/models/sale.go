@@ -47,5 +47,5 @@ type SaleGetListRequest struct {
 
 type SaleGetListResponse struct {
 	Count int     `json:"count"`
-	Sales []*Sale `json:"Salees"`
+	Sales []*Sale `json:"sales"`
 }

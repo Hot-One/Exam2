@@ -29,7 +29,7 @@ func (r *SaleRepo) Create(ctx context.Context, req *models.SaleCreate) (string, 
 		query string
 	)
 	query = `
-		INSERT INTO sale(id, branch_id, shop_assistent_id, cashier_id, price, payment_type, client_name, updated_at)
+		INSERT INTO sales(id, branch_id, shop_assistent_id, cashier_id, price, payment_type, client_name, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7,NOW())
 	`
 	_, err := r.db.Exec(ctx, query,
@@ -81,7 +81,7 @@ func (r *SaleRepo) GetByID(ctx context.Context, req *models.SalePrimaryKey) (*mo
 			updated_at,
 			deleted,
 			deleted_at
-		FROM sale
+		FROM sales
 		WHERE id = $1
 	`
 
@@ -145,7 +145,7 @@ func (r *SaleRepo) GetList(ctx context.Context, req *models.SaleGetListRequest) 
 			updated_at,
 			deleted,
 			deleted_at
-		FROM sale
+		FROM sales
 	`
 
 	if req.Offset > 0 {
@@ -231,7 +231,7 @@ func (r *SaleRepo) Update(ctx context.Context, req *models.SaleUpdate) (int64, e
 
 	query = `
 		UPDATE
-			sale
+			sales
 		SET
 			id = :id,
 			branch_id = :branch_id
@@ -273,7 +273,7 @@ func (r *SaleRepo) Delete(ctx context.Context, req *models.SalePrimaryKey) (int6
 
 	query = `
 		UPDATE
-			sale
+			sales
 		SET
 			deleted = :deleted,
 			deleted_at = NOW(),

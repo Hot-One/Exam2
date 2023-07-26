@@ -11,11 +11,12 @@ import (
 )
 
 type store struct {
-	db         *pgxpool.Pool
-	branch     *BranchRepo
-	stafftarif *StaffTarifRepo
-	staff      *StaffRepo
-	sale       *SaleRepo
+	db               *pgxpool.Pool
+	branch           *BranchRepo
+	stafftarif       *StaffTarifRepo
+	staff            *StaffRepo
+	sale             *SaleRepo
+	stafftransaction *StaffTransactionRepo
 }
 
 func NewConnectionPostgres(cfg *config.Config) (storage.StorageI, error) {
@@ -82,4 +83,13 @@ func (s *store) Sale() storage.SaleRepoI {
 	}
 
 	return s.sale
+}
+
+func (s *store) StaffTransaction() storage.StaffTransactionRepoI {
+
+	if s.stafftransaction == nil {
+		s.stafftransaction = NewStaffTransactionRepo(s.db)
+	}
+
+	return s.stafftransaction
 }

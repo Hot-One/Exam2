@@ -43,6 +43,31 @@ func (h *handler) CreateSale(c *gin.Context) {
 		return
 	}
 
+	branch, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: resp.BranchId})
+	if err != nil {
+		h.handlerResponse(c, "storage.sale.branch.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp.BranchId = branch.Name
+
+	if len(resp.ShopAssistentId) > 0 {
+		shopAssistent, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.ShopAssistentId})
+		if err != nil {
+			h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+			return
+		}
+		resp.ShopAssistentId = shopAssistent.Name
+	}
+
+	cashier, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.CashierId})
+	if err != nil {
+		h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp.CashierId = cashier.Name
+
 	h.handlerResponse(c, "create sale resposne", http.StatusCreated, resp)
 }
 
@@ -71,6 +96,31 @@ func (h *handler) GetByIdSale(c *gin.Context) {
 		h.handlerResponse(c, "storage.sale.getById", http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	branch, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: resp.BranchId})
+	if err != nil {
+		h.handlerResponse(c, "storage.sale.branch.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp.BranchId = branch.Name
+
+	if len(resp.ShopAssistentId) > 0 {
+		shopAssistent, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.ShopAssistentId})
+		if err != nil {
+			h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+			return
+		}
+		resp.ShopAssistentId = shopAssistent.Name
+	}
+
+	cashier, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.CashierId})
+	if err != nil {
+		h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp.CashierId = cashier.Name
 
 	h.handlerResponse(c, "get by id sale resposne", http.StatusOK, resp)
 }
@@ -111,6 +161,33 @@ func (h *handler) GetListSale(c *gin.Context) {
 	if err != nil {
 		h.handlerResponse(c, "storage.sale.get_list", http.StatusInternalServerError, err.Error())
 		return
+	}
+
+	for i, v := range resp.Sales {
+		branch, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: v.BranchId})
+		if err != nil {
+			h.handlerResponse(c, "storage.sale.branch.getById", http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		resp.Sales[i].BranchId = branch.Name
+
+		if len(resp.Sales[i].ShopAssistentId) > 0 {
+			shopAssistent, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: v.ShopAssistentId})
+			if err != nil {
+				h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+				return
+			}
+			resp.Sales[i].ShopAssistentId = shopAssistent.Name
+		}
+
+		cashier, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: v.CashierId})
+		if err != nil {
+			h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		resp.Sales[i].CashierId = cashier.Name
 	}
 
 	h.handlerResponse(c, "get list sale resposne", http.StatusOK, resp)
@@ -164,6 +241,31 @@ func (h *handler) UpdateSale(c *gin.Context) {
 		h.handlerResponse(c, "storage.sale.getById", http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	branch, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: resp.BranchId})
+	if err != nil {
+		h.handlerResponse(c, "storage.sale.branch.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp.BranchId = branch.Name
+
+	if len(resp.ShopAssistentId) > 0 {
+		shopAssistent, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.ShopAssistentId})
+		if err != nil {
+			h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+			return
+		}
+		resp.ShopAssistentId = shopAssistent.Name
+	}
+
+	cashier, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.CashierId})
+	if err != nil {
+		h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	resp.CashierId = cashier.Name
 
 	h.handlerResponse(c, "create sale resposne", http.StatusAccepted, resp)
 }
