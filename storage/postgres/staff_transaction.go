@@ -24,28 +24,43 @@ func NewStaffTransactionRepo(db *pgxpool.Pool) *StaffTransactionRepo {
 }
 
 func (r *StaffTransactionRepo) Create(ctx context.Context, req *models.StaffTransactionCreate) (string, error) {
+	trx, err := r.db.Begin(ctx)
+	if err != nil {
+		return "", nil
+	}
+
+	defer func() {
+		if err != nil {
+			trx.Rollback(ctx)
+		} else {
+			trx.Commit(ctx)
+		}
+	}()
 	var (
 		id    = uuid.New().String()
 		query string
 	)
+
 	query = `
 		INSERT INTO staff_transaction(id, sales_id, type, source_type, text, amount, staff_id, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7,NOW())
+		VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
 	`
-	_, err := r.db.Exec(ctx, query,
+	_, err = trx.Exec(ctx, query,
 		id,
 		req.SaleId,
 		req.Type,
 		req.SourceType,
 		req.Text,
 		req.Amount,
-		req.StaffId,
+		helper.NewNullString(req.StaffId),
 	)
+
 	if err != nil {
-		log.Println(err.Error())
+		log.Println("Here", err.Error())
 		return "", err
 	}
 	return id, nil
+
 }
 
 func (r *StaffTransactionRepo) GetByID(ctx context.Context, req *models.StaffTransactionPrimaryKey) (*models.StaffTransaction, error) {
@@ -224,12 +239,12 @@ func (r *StaffTransactionRepo) Update(ctx context.Context, req *models.StaffTran
 			staff_transaction
 		SET
 			id = :id,
-			sales_id = :sales_id
-			type = :type
-			source_type = :source_type
-			text = :text
-			amount = :amount
-			staff_id = :staff_id
+			sales_id = :sales_id,
+			type = :type,
+			source_type = :source_type,
+			text = :text,
+			amount = :amount,
+			staff_id = :staff_id,
 			updated_at = NOW()
 		WHERE id = :id
 	`

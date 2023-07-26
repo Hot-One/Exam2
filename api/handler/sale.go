@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -30,7 +29,6 @@ func (h *handler) CreateSale(c *gin.Context) {
 		h.handlerResponse(c, "error sale should bind json", http.StatusBadRequest, err.Error())
 		return
 	}
-	log.Println(createSale)
 	id, err := h.strg.Sale().Create(c.Request.Context(), &createSale)
 	if err != nil {
 		h.handlerResponse(c, "storage.sale.create", http.StatusInternalServerError, err.Error())
@@ -43,30 +41,48 @@ func (h *handler) CreateSale(c *gin.Context) {
 		return
 	}
 
-	branch, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: resp.BranchId})
-	if err != nil {
-		h.handlerResponse(c, "storage.sale.branch.getById", http.StatusInternalServerError, err.Error())
-		return
+	// if len(resp.ShopAssistentId) > 0 {
+	// 	shopAssistent, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.ShopAssistentId})
+	// 	if err != nil {
+	// 		h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+	// 		return
+	// 	}
+	// 	resp.ShopAssistentId = shopAssistent.Name
+	// }
+
+	// cashier, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.CashierId})
+	// if err != nil {
+	// 	h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+	// 	return
+	// }
+
+	// resp.CashierId = cashier.Name
+
+	body := map[string]interface{}{}
+	body = map[string]interface{}{
+		"sales_id":    id,
+		"type":        "TopUp",
+		"source_type": "Sales",
+		"text":        "Sales finished successfully",
+		"staff_id":    resp.CashierId,
+		"amount":      resp.Price,
 	}
-
-	resp.BranchId = branch.Name
-
+	_, err = helper.DoRequest("http://localhost:8080/staff_transaction", "POST", body)
 	if len(resp.ShopAssistentId) > 0 {
-		shopAssistent, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.ShopAssistentId})
-		if err != nil {
-			h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
-			return
+		body = map[string]interface{}{
+			"sales_id":    resp.Id,
+			"type":        "TopUp",
+			"source_type": "Sales",
+			"text":        "Sales finished successfully",
+			"staff_id":    resp.ShopAssistentId,
+			"amount":      resp.Price,
 		}
-		resp.ShopAssistentId = shopAssistent.Name
+		_, err = helper.DoRequest("http://localhost:8080/staff_transaction", "POST", body)
 	}
-
-	cashier, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.CashierId})
 	if err != nil {
-		h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+		h.handlerResponse(c, "storage.sale.create", http.StatusInternalServerError, err.Error())
 		return
 	}
-
-	resp.CashierId = cashier.Name
 
 	h.handlerResponse(c, "create sale resposne", http.StatusCreated, resp)
 }
@@ -97,30 +113,30 @@ func (h *handler) GetByIdSale(c *gin.Context) {
 		return
 	}
 
-	branch, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: resp.BranchId})
-	if err != nil {
-		h.handlerResponse(c, "storage.sale.branch.getById", http.StatusInternalServerError, err.Error())
-		return
-	}
+	// branch, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: resp.BranchId})
+	// if err != nil {
+	// 	h.handlerResponse(c, "storage.sale.branch.getById", http.StatusInternalServerError, err.Error())
+	// 	return
+	// }
 
-	resp.BranchId = branch.Name
+	// resp.BranchId = branch.Name
 
-	if len(resp.ShopAssistentId) > 0 {
-		shopAssistent, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.ShopAssistentId})
-		if err != nil {
-			h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
-			return
-		}
-		resp.ShopAssistentId = shopAssistent.Name
-	}
+	// if len(resp.ShopAssistentId) > 0 {
+	// 	shopAssistent, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.ShopAssistentId})
+	// 	if err != nil {
+	// 		h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+	// 		return
+	// 	}
+	// 	resp.ShopAssistentId = shopAssistent.Name
+	// }
 
-	cashier, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.CashierId})
-	if err != nil {
-		h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
-		return
-	}
+	// cashier, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.CashierId})
+	// if err != nil {
+	// 	h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+	// 	return
+	// }
 
-	resp.CashierId = cashier.Name
+	// resp.CashierId = cashier.Name
 
 	h.handlerResponse(c, "get by id sale resposne", http.StatusOK, resp)
 }
@@ -241,31 +257,55 @@ func (h *handler) UpdateSale(c *gin.Context) {
 		h.handlerResponse(c, "storage.sale.getById", http.StatusInternalServerError, err.Error())
 		return
 	}
-
-	branch, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: resp.BranchId})
-	if err != nil {
-		h.handlerResponse(c, "storage.sale.branch.getById", http.StatusInternalServerError, err.Error())
-		return
+	body := map[string]interface{}{}
+	body = map[string]interface{}{
+		"sales_id":    id,
+		"type":        "Withdraw",
+		"source_type": "Sales",
+		"text":        "Canceled",
+		"staff_id":    resp.CashierId,
+		"amount":      resp.Price,
 	}
-
-	resp.BranchId = branch.Name
-
+	_, err = helper.DoRequest("http://localhost:8080/staff_transaction", "POST", body)
 	if len(resp.ShopAssistentId) > 0 {
-		shopAssistent, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.ShopAssistentId})
-		if err != nil {
-			h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
-			return
+		body = map[string]interface{}{
+			"sales_id":    resp.Id,
+			"type":        "Withdraw",
+			"source_type": "Sales",
+			"text":        "Canceled",
+			"staff_id":    resp.ShopAssistentId,
+			"amount":      resp.Price,
 		}
-		resp.ShopAssistentId = shopAssistent.Name
+		_, err = helper.DoRequest("http://localhost:8080/staff_transaction", "POST", body)
 	}
-
-	cashier, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.CashierId})
 	if err != nil {
-		h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+		h.handlerResponse(c, "storage.sale.create", http.StatusInternalServerError, err.Error())
 		return
 	}
+	// branch, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: resp.BranchId})
+	// if err != nil {
+	// 	h.handlerResponse(c, "storage.sale.branch.getById", http.StatusInternalServerError, err.Error())
+	// 	return
+	// }
 
-	resp.CashierId = cashier.Name
+	// resp.BranchId = branch.Name
+
+	// if len(resp.ShopAssistentId) > 0 {
+	// 	shopAssistent, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.ShopAssistentId})
+	// 	if err != nil {
+	// 		h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+	// 		return
+	// 	}
+	// 	resp.ShopAssistentId = shopAssistent.Name
+	// }
+
+	// cashier, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{Id: resp.CashierId})
+	// if err != nil {
+	// 	h.handlerResponse(c, "storage.sale.staff.getById", http.StatusInternalServerError, err.Error())
+	// 	return
+	// }
+
+	// resp.CashierId = cashier.Name
 
 	h.handlerResponse(c, "create sale resposne", http.StatusAccepted, resp)
 }

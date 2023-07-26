@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -23,14 +23,13 @@ import (
 // @Response 400 {object} Response{data=string} "Bad Request"
 // @Failure 500 {object} Response{data=string} "Server error"
 func (h *handler) CreateStaffTransaction(c *gin.Context) {
-
 	var createStaffTransaction models.StaffTransactionCreate
+
 	err := c.ShouldBindJSON(&createStaffTransaction)
 	if err != nil {
 		h.handlerResponse(c, "error staff_transaction should bind json", http.StatusBadRequest, err.Error())
 		return
 	}
-	log.Println(createStaffTransaction)
 	id, err := h.strg.StaffTransaction().Create(c.Request.Context(), &createStaffTransaction)
 	if err != nil {
 		h.handlerResponse(c, "storage.staff_transaction.create", http.StatusInternalServerError, err.Error())
@@ -40,6 +39,133 @@ func (h *handler) CreateStaffTransaction(c *gin.Context) {
 	resp, err := h.strg.StaffTransaction().GetByID(c.Request.Context(), &models.StaffTransactionPrimaryKey{Id: id})
 	if err != nil {
 		h.handlerResponse(c, "storage.staff_transaction.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Get Staff
+	staff, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{
+		Id: resp.StaffId,
+	})
+	if err != nil {
+		h.handlerResponse(c, "storage.staff_transaction.staff.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Get Staff Tarif
+	tarif, err := h.strg.StaffTarif().GetByID(c.Request.Context(), &models.StaffTarifPrimaryKey{
+		Id: staff.TarifId,
+	})
+	if err != nil {
+		h.handlerResponse(c, "storage.staff_transaction.staff_tarif.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	sale, err := h.strg.Sale().GetByID(c.Request.Context(), &models.SalePrimaryKey{Id: resp.SaleId})
+	if err != nil {
+		h.handlerResponse(c, "storage.staff_transaction.Sale.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Update Staff Balance
+	if strings.ToLower(resp.Type) == "topup" {
+		if strings.ToLower(sale.PaymentType) == "cash" {
+			if strings.ToLower(tarif.Type) == "fixed" {
+				staff.Balance += tarif.AmountForCash
+				_, err = h.strg.Staff().Update(c.Request.Context(), &models.StaffUpdate{
+					Id:       staff.Id,
+					BranchId: staff.BranchId,
+					TarifId:  staff.TarifId,
+					Type:     staff.Type,
+					Name:     staff.Name,
+					Balance:  staff.Balance,
+				})
+			} else if strings.ToLower(tarif.Type) == "percent" {
+				staff.Balance += (resp.Amount * tarif.AmountForCash) / 100
+				_, err = h.strg.Staff().Update(c.Request.Context(), &models.StaffUpdate{
+					Id:       staff.Id,
+					BranchId: staff.BranchId,
+					TarifId:  staff.TarifId,
+					Type:     staff.Type,
+					Name:     staff.Name,
+					Balance:  staff.Balance,
+				})
+			}
+		} else if strings.ToLower(sale.PaymentType) == "card" {
+			if strings.ToLower(tarif.Type) == "fixed" {
+				staff.Balance += tarif.AmountForCard
+				_, err = h.strg.Staff().Update(c.Request.Context(), &models.StaffUpdate{
+					Id:       staff.Id,
+					BranchId: staff.BranchId,
+					TarifId:  staff.TarifId,
+					Type:     staff.Type,
+					Name:     staff.Name,
+					Balance:  staff.Balance,
+				})
+
+			} else if strings.ToLower(tarif.Type) == "percent" {
+				staff.Balance += (resp.Amount * tarif.AmountForCard) / 100
+				_, err = h.strg.Staff().Update(c.Request.Context(), &models.StaffUpdate{
+					Id:       staff.Id,
+					BranchId: staff.BranchId,
+					TarifId:  staff.TarifId,
+					Type:     staff.Type,
+					Name:     staff.Name,
+					Balance:  staff.Balance,
+				})
+			}
+		}
+	} else if strings.ToLower(resp.Type) == "withdraw" {
+		if strings.ToLower(sale.PaymentType) == "cash" {
+			if strings.ToLower(tarif.Type) == "fixed" {
+				staff.Balance -= tarif.AmountForCash
+				_, err = h.strg.Staff().Update(c.Request.Context(), &models.StaffUpdate{
+					Id:       staff.Id,
+					BranchId: staff.BranchId,
+					TarifId:  staff.TarifId,
+					Type:     staff.Type,
+					Name:     staff.Name,
+					Balance:  staff.Balance,
+				})
+
+			} else if strings.ToLower(tarif.Type) == "percent" {
+				staff.Balance -= (resp.Amount * tarif.AmountForCash) / 100
+				_, err = h.strg.Staff().Update(c.Request.Context(), &models.StaffUpdate{
+					Id:       staff.Id,
+					BranchId: staff.BranchId,
+					TarifId:  staff.TarifId,
+					Type:     staff.Type,
+					Name:     staff.Name,
+					Balance:  staff.Balance,
+				})
+			}
+		} else if strings.ToLower(sale.PaymentType) == "card" {
+			if strings.ToLower(tarif.Type) == "fixed" {
+				staff.Balance -= tarif.AmountForCard
+				_, err = h.strg.Staff().Update(c.Request.Context(), &models.StaffUpdate{
+					Id:       staff.Id,
+					BranchId: staff.BranchId,
+					TarifId:  staff.TarifId,
+					Type:     staff.Type,
+					Name:     staff.Name,
+					Balance:  staff.Balance,
+				})
+
+			} else if strings.ToLower(tarif.Type) == "percent" {
+				staff.Balance -= (resp.Amount * tarif.AmountForCard) / 100
+				_, err = h.strg.Staff().Update(c.Request.Context(), &models.StaffUpdate{
+					Id:       staff.Id,
+					BranchId: staff.BranchId,
+					TarifId:  staff.TarifId,
+					Type:     staff.Type,
+					Name:     staff.Name,
+					Balance:  staff.Balance,
+				})
+			}
+		}
+	}
+
+	if err != nil {
+		h.handlerResponse(c, "storage.staff_transaction.staff.update", http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -163,6 +289,79 @@ func (h *handler) UpdateStaffTransaction(c *gin.Context) {
 	if err != nil {
 		h.handlerResponse(c, "storage.staff_transaction.getById", http.StatusInternalServerError, err.Error())
 		return
+	}
+	// Get Staff
+	staff, err := h.strg.Staff().GetByID(c.Request.Context(), &models.StaffPrimaryKey{
+		Id: resp.StaffId,
+	})
+	if err != nil {
+		h.handlerResponse(c, "storage.staff_transaction.staff.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// Get Staff Tarif
+	tarif, err := h.strg.StaffTarif().GetByID(c.Request.Context(), &models.StaffTarifPrimaryKey{
+		Id: staff.TarifId,
+	})
+	if err != nil {
+		h.handlerResponse(c, "storage.staff_transaction.staff_tarif.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	sale, err := h.strg.Sale().GetByID(c.Request.Context(), &models.SalePrimaryKey{Id: resp.SaleId})
+	if err != nil {
+		h.handlerResponse(c, "storage.staff_transaction.Sale.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if strings.ToLower(resp.Type) == "withdraw" {
+		if strings.ToLower(sale.PaymentType) == "cash" {
+			if strings.ToLower(tarif.Type) == "fixed" {
+				staff.Balance -= tarif.AmountForCash
+				_, err = h.strg.Staff().Update(c.Request.Context(), &models.StaffUpdate{
+					Id:       staff.Id,
+					BranchId: staff.BranchId,
+					TarifId:  staff.TarifId,
+					Type:     staff.Type,
+					Name:     staff.Name,
+					Balance:  staff.Balance,
+				})
+
+			} else if strings.ToLower(tarif.Type) == "percent" {
+				staff.Balance -= (resp.Amount * tarif.AmountForCash) / 100
+				_, err = h.strg.Staff().Update(c.Request.Context(), &models.StaffUpdate{
+					Id:       staff.Id,
+					BranchId: staff.BranchId,
+					TarifId:  staff.TarifId,
+					Type:     staff.Type,
+					Name:     staff.Name,
+					Balance:  staff.Balance,
+				})
+			}
+		} else if strings.ToLower(sale.PaymentType) == "card" {
+			if strings.ToLower(tarif.Type) == "fixed" {
+				staff.Balance -= tarif.AmountForCard
+				_, err = h.strg.Staff().Update(c.Request.Context(), &models.StaffUpdate{
+					Id:       staff.Id,
+					BranchId: staff.BranchId,
+					TarifId:  staff.TarifId,
+					Type:     staff.Type,
+					Name:     staff.Name,
+					Balance:  staff.Balance,
+				})
+
+			} else if strings.ToLower(tarif.Type) == "percent" {
+				staff.Balance -= (resp.Amount * tarif.AmountForCard) / 100
+				_, err = h.strg.Staff().Update(c.Request.Context(), &models.StaffUpdate{
+					Id:       staff.Id,
+					BranchId: staff.BranchId,
+					TarifId:  staff.TarifId,
+					Type:     staff.Type,
+					Name:     staff.Name,
+					Balance:  staff.Balance,
+				})
+			}
+		}
 	}
 
 	h.handlerResponse(c, "create staff_transaction resposne", http.StatusAccepted, resp)

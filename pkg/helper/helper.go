@@ -1,11 +1,16 @@
 package helper
 
 import (
+	"bytes"
 	"crypto/rand"
 	"database/sql"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func ReplaceQueryParams(namedQuery string, params map[string]interface{}) (string, []interface{}) {
@@ -111,4 +116,32 @@ func NewNullBool(s bool) sql.NullBool {
 		Bool:  s,
 		Valid: true,
 	}
+}
+
+func DoRequest(url string, method string, body interface{}) ([]byte, error) {
+	data, err := json.Marshal(&body)
+	if err != nil {
+		return nil, err
+	}
+	client := &http.Client{
+		Timeout: time.Duration(5 * time.Second),
+	}
+
+	request, err := http.NewRequest(method, url, bytes.NewBuffer(data))
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := client.Do(request)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	respByte, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	return respByte, nil
 }

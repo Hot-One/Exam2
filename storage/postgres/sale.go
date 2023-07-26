@@ -223,7 +223,6 @@ func (r *SaleRepo) GetList(ctx context.Context, req *models.SaleGetListRequest) 
 }
 
 func (r *SaleRepo) Update(ctx context.Context, req *models.SaleUpdate) (int64, error) {
-
 	var (
 		query  string
 		params map[string]interface{}
@@ -234,18 +233,19 @@ func (r *SaleRepo) Update(ctx context.Context, req *models.SaleUpdate) (int64, e
 			sales
 		SET
 			id = :id,
-			branch_id = :branch_id
-			shop_assistent_id = :shop_assistent_id
-			cashier_id = :cashier_id
-			price = :price
-			payment_type = :payment_type
-			client_name = :client_name
-			status = :status
+			branch_id = :branch_id,
+			shop_assistent_id = :shop_assistent_id,
+			cashier_id = :cashier_id,
+			price = :price,
+			payment_type = :payment_type,
+			client_name = :client_name,
+			status = :status,
 			updated_at = NOW()
 		WHERE id = :id
 	`
 
 	params = map[string]interface{}{
+		"id":                req.Id,
 		"branch_id":         req.BranchId,
 		"shop_assistent_id": req.ShopAssistentId,
 		"cashier_id":        req.CashierId,
@@ -259,6 +259,7 @@ func (r *SaleRepo) Update(ctx context.Context, req *models.SaleUpdate) (int64, e
 
 	result, err := r.db.Exec(ctx, query, args...)
 	if err != nil {
+		log.Println("Here:", err.Error())
 		return 0, err
 	}
 

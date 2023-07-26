@@ -226,12 +226,10 @@ func (r *StaffRepo) GetList(ctx context.Context, req *models.StaffGetListRequest
 }
 
 func (r *StaffRepo) Update(ctx context.Context, req *models.StaffUpdate) (int64, error) {
-
 	var (
 		query  string
 		params map[string]interface{}
 	)
-
 	query = `
 		UPDATE
 			staff
@@ -241,7 +239,7 @@ func (r *StaffRepo) Update(ctx context.Context, req *models.StaffUpdate) (int64,
 			type = :type,
 			branch_id = :branch_id,
 			tarif_id = :tarif_id,
-			balance = :balance,
+			balace = :balace,
 			updated_at = NOW()
 		WHERE id = :id
 	`
@@ -252,7 +250,7 @@ func (r *StaffRepo) Update(ctx context.Context, req *models.StaffUpdate) (int64,
 		"type":      req.Type,
 		"branch_id": req.BranchId,
 		"tarif_id":  req.TarifId,
-		"balance":   req.Balance,
+		"balace":    req.Balance,
 	}
 
 	query, args := helper.ReplaceQueryParams(query, params)

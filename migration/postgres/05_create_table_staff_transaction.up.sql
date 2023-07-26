@@ -11,3 +11,4 @@ CREATE TABLE "staff_transaction"(
     "deleted" BOOLEAN DEFAULT false,
     "deleted_at" TIMESTAMP
 );
+

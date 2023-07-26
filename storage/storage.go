@@ -13,6 +13,7 @@ type StorageI interface {
 	Staff() StaffRepoI
 	Sale() SaleRepoI
 	StaffTransaction() StaffTransactionRepoI
+	BusinessProcess() BusinessProcessRepoI
 }
 
 type BranchRepoI interface {
@@ -53,4 +54,8 @@ type StaffTransactionRepoI interface {
 	GetList(context.Context, *models.StaffTransactionGetListRequest) (*models.StaffTransactionGetListResponse, error)
 	Update(context.Context, *models.StaffTransactionUpdate) (int64, error)
 	Delete(context.Context, *models.StaffTransactionPrimaryKey) (int64, error)
+}
+
+type BusinessProcessRepoI interface {
+	GetTopWorker(context.Context, *models.BusinessProcessGetRequest) (*models.BusinessProcessGetResponse, error)
 }

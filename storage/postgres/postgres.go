@@ -17,6 +17,7 @@ type store struct {
 	staff            *StaffRepo
 	sale             *SaleRepo
 	stafftransaction *StaffTransactionRepo
+	businessprocess  *BusinessProcessRepo
 }
 
 func NewConnectionPostgres(cfg *config.Config) (storage.StorageI, error) {
@@ -92,4 +93,13 @@ func (s *store) StaffTransaction() storage.StaffTransactionRepoI {
 	}
 
 	return s.stafftransaction
+}
+
+func (s *store) BusinessProcess() storage.BusinessProcessRepoI {
+
+	if s.businessprocess == nil {
+		s.businessprocess = NewBusinessProcessRepo(s.db)
+	}
+
+	return s.businessprocess
 }

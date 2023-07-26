@@ -48,7 +48,7 @@ func Load() Config {
 	cfg.DefaultFrom = 0
 	cfg.DefaultTo = 1000000000
 
-	cfg.Environment = cast.ToString(getOrReturnDefaultValue("ENVIRONMENT", DebugMode))
+	cfg.Environment = cast.ToString(getOrReturnDefaultValue("ENVIRONMENT", ReleaseMode))
 
 	cfg.ServerHost = cast.ToString(getOrReturnDefaultValue("SERVER_HOST", "localhost"))
 	cfg.HTTPPort = cast.ToString(getOrReturnDefaultValue("HTTP_PORT", ":8080"))
