@@ -29,6 +29,9 @@ type Config struct {
 
 	DefaultOffset int
 	DefaultLimit  int
+
+	DefaultFrom int
+	DefaultTo   int
 }
 
 func Load() Config {
@@ -41,6 +44,9 @@ func Load() Config {
 
 	cfg.DefaultOffset = 0
 	cfg.DefaultLimit = 10
+
+	cfg.DefaultFrom = 0
+	cfg.DefaultTo = 1000000000
 
 	cfg.Environment = cast.ToString(getOrReturnDefaultValue("ENVIRONMENT", DebugMode))
 

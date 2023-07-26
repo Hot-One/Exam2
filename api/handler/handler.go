@@ -63,3 +63,21 @@ func (h *handler) getLimitQuery(limit string) (int, error) {
 
 	return strconv.Atoi(limit)
 }
+
+func (h *handler) getfromQuery(limit string) (int, error) {
+
+	if len(limit) <= 0 {
+		return h.cfg.DefaultFrom, nil
+	}
+
+	return strconv.Atoi(limit)
+}
+
+func (h *handler) gettoQuery(limit string) (int, error) {
+
+	if len(limit) <= 0 {
+		return h.cfg.DefaultTo, nil
+	}
+
+	return strconv.Atoi(limit)
+}

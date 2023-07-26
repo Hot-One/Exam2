@@ -134,6 +134,10 @@ func (r *BranchRepo) GetList(ctx context.Context, req *models.BranchGetListReque
 		where += ` AND name ILIKE '%' || '` + req.Search + `' || '%'`
 	}
 
+	if req.SearchByAddress != "" {
+		where += ` AND address ILIKE '%' || '` + req.Search + `' || '%'`
+	}
+
 	query += where + offset + limit
 
 	rows, err := r.db.Query(ctx, query)

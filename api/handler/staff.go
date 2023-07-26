@@ -116,6 +116,11 @@ func (h *handler) GetByIdStaff(c *gin.Context) {
 // @Param offset query string false "offset"
 // @Param limit query string false "limit"
 // @Param search query string false "search"
+// @Param from query string false "from"
+// @Param to query string false "to"
+// @Param search_by_branch query string false "search_by_branch"
+// @Param search_by_tarif query string false "search_by_tarif"
+// @Param search_by_type query string false "search_by_type"
 // @Success 200 {object} Response{data=string} "Success Request"
 // @Response 400 {object} Response{data=string} "Bad Request"
 // @Failure 500 {object} Response{data=string} "Server error"
@@ -133,10 +138,25 @@ func (h *handler) GetListStaff(c *gin.Context) {
 		return
 	}
 
+	from, err := h.getOffsetQuery(c.Query("from"))
+	if err != nil {
+		h.handlerResponse(c, "get list staff from", http.StatusBadRequest, "invalid from")
+		return
+	}
+
+	to, err := h.getLimitQuery(c.Query("to"))
+	if err != nil {
+		h.handlerResponse(c, "get list staff to", http.StatusBadRequest, "invalid to")
+		return
+	}
+
 	resp, err := h.strg.Staff().GetList(c.Request.Context(), &models.StaffGetListRequest{
-		Offset: offset,
-		Limit:  limit,
-		Search: c.Query("search"),
+		Offset:         offset,
+		Limit:          limit,
+		Search:         c.Query("search"),
+		SearchByBranch: c.Query("search_by_branch"),
+		From:           from,
+		To:             to,
 	})
 	if err != nil {
 		h.handlerResponse(c, "storage.staff.get_list", http.StatusInternalServerError, err.Error())

@@ -115,6 +115,8 @@ func (r *StaffRepo) GetList(ctx context.Context, req *models.StaffGetListRequest
 		resp   = &models.StaffGetListResponse{}
 		query  string
 		where  = " WHERE deleted = false"
+		from   = " BETWEEN 0"
+		to     = " AND 10"
 		offset = " OFFSET 0"
 		limit  = " LIMIT 10"
 	)
@@ -147,7 +149,27 @@ func (r *StaffRepo) GetList(ctx context.Context, req *models.StaffGetListRequest
 		where += ` AND name ILIKE '%' || '` + req.Search + `' || '%'`
 	}
 
-	query += where + offset + limit
+	if req.SearchByBranch != "" {
+		where += ` AND branch_id ILIKE '%' || '` + req.Search + `' || '%'`
+	}
+
+	if req.SearchByTarif != "" {
+		where += ` AND tarif_id ILIKE '%' || '` + req.Search + `' || '%'`
+	}
+
+	if req.SearchByTarif != "" {
+		where += ` AND type ILIKE '%' || '` + req.Search + `' || '%'`
+	}
+
+	if req.From >= 0 {
+		from = fmt.Sprintf(" AND balace BETWEEN %d", req.From)
+	}
+
+	if req.To >= 0 {
+		to = fmt.Sprintf(" AND %d", req.To)
+	}
+
+	query += where + from + to + offset + limit
 
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {

@@ -85,6 +85,7 @@ func (h *handler) GetByIdBranch(c *gin.Context) {
 // @Param offset query string false "offset"
 // @Param limit query string false "limit"
 // @Param search query string false "search"
+// @Param search_by_address query string false "search_by_address"
 // @Success 200 {object} Response{data=string} "Success Request"
 // @Response 400 {object} Response{data=string} "Bad Request"
 // @Failure 500 {object} Response{data=string} "Server error"

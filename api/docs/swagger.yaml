@@ -92,6 +92,38 @@ definitions:
       type:
         type: string
     type: object
+  models.StaffTransactionCreate:
+    properties:
+      amount:
+        type: integer
+      sales_id:
+        type: string
+      source_type:
+        type: string
+      staff_id:
+        type: string
+      text:
+        type: string
+      type:
+        type: string
+    type: object
+  models.StaffTransactionUpdate:
+    properties:
+      amount:
+        type: integer
+      id:
+        type: string
+      sales_id:
+        type: string
+      source_type:
+        type: string
+      staff_id:
+        type: string
+      text:
+        type: string
+      type:
+        type: string
+    type: object
   models.StaffUpdate:
     properties:
       balace:
@@ -128,6 +160,10 @@ paths:
       - description: search
         in: query
         name: search
+        type: string
+      - description: search_by_address
+        in: query
+        name: search_by_address
         type: string
       responses:
         "200":
@@ -581,6 +617,26 @@ paths:
         in: query
         name: search
         type: string
+      - description: from
+        in: query
+        name: from
+        type: string
+      - description: to
+        in: query
+        name: to
+        type: string
+      - description: search_by_branch
+        in: query
+        name: search_by_branch
+        type: string
+      - description: search_by_tarif
+        in: query
+        name: search_by_tarif
+        type: string
+      - description: search_by_type
+        in: query
+        name: search_by_type
+        type: string
       responses:
         "200":
           description: Success Request
@@ -1014,4 +1070,230 @@ paths:
       summary: Update StaffTarif
       tags:
       - StaffTarif
+  /staff_transaction:
+    get:
+      consumes:
+      - application/json
+      description: Get List StaffTransaction
+      operationId: get_list_staff_transaction
+      parameters:
+      - description: offset
+        in: query
+        name: offset
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: search
+        in: query
+        name: search
+        type: string
+      responses:
+        "200":
+          description: Success Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Get List StaffTransaction
+      tags:
+      - StaffTransaction
+    post:
+      consumes:
+      - application/json
+      description: Create StaffTransaction
+      operationId: create_staff_transaction
+      parameters:
+      - description: StaffTransactionCreateRequest
+        in: body
+        name: staff_transaction
+        required: true
+        schema:
+          $ref: '#/definitions/models.StaffTransactionCreate'
+      responses:
+        "200":
+          description: Success Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Create StaffTransaction
+      tags:
+      - StaffTransaction
+  /staff_transaction/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete StaffTransaction
+      operationId: delete_staff_transaction
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Delete StaffTransaction
+      tags:
+      - StaffTransaction
+    get:
+      consumes:
+      - application/json
+      description: Get By ID StaffTransaction
+      operationId: get_by_id_staff_transaction
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Get By ID StaffTransaction
+      tags:
+      - StaffTransaction
+    put:
+      consumes:
+      - application/json
+      description: Update StaffTransaction
+      operationId: update_staff_transaction
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: StaffTransactionUpdateRequest
+        in: body
+        name: staff_transaction
+        required: true
+        schema:
+          $ref: '#/definitions/models.StaffTransactionUpdate'
+      responses:
+        "200":
+          description: Success Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Update StaffTransaction
+      tags:
+      - StaffTransaction
 swagger: "2.0"

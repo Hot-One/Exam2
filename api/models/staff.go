@@ -34,9 +34,14 @@ type StaffUpdate struct {
 }
 
 type StaffGetListRequest struct {
-	Offset int    `json:"offset"`
-	Limit  int    `json:"limit"`
-	Search string `json:"search"`
+	Offset         int    `json:"offset"`
+	Limit          int    `json:"limit"`
+	Search         string `json:"search"`
+	SearchByBranch string `json:"search_by_branch"`
+	SearchByTarif  string `json:"search_by_tarif"`
+	SearchByType   string `json:"search_by_type"`
+	From           int    `json:"from"`
+	To             int    `json:"to"`
 }
 
 type StaffGetListResponse struct {

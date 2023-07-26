@@ -1,14 +1,15 @@
 SELECT
     COUNT(*) OVER(),
     id,
-    sales_id,
+    branch_id,
+    tarif_id,
     type,
-    source_type,
-    text,
-    amount,
-    staff_id,
+    name,
+    balace,
     created_at,
     updated_at,
     deleted,
     deleted_at
-FROM staff_transaction
+FROM staff
+WHERE 
+    balace BETWEEN 0 AND 10000000;
