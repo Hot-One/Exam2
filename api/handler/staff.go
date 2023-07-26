@@ -143,22 +143,22 @@ func (h *handler) GetListStaff(c *gin.Context) {
 		return
 	}
 
-	// for i := 0; i < len(resp.Staffes); i++ {
-	// 	tarif_type, err := h.strg.StaffTarif().GetByID(c.Request.Context(), &models.StaffTarifPrimaryKey{Id: resp.Staffes[i].TarifId})
-	// 	if err != nil {
-	// 		h.handlerResponse(c, "storage.staff.stafftarif.getById", http.StatusInternalServerError, err.Error())
-	// 		return
-	// 	}
+	for i, v := range resp.Staffes {
+		tarif_type, err := h.strg.StaffTarif().GetByID(c.Request.Context(), &models.StaffTarifPrimaryKey{Id: v.TarifId})
+		if err != nil {
+			h.handlerResponse(c, "storage.staff.stafftarif.getById", http.StatusInternalServerError, err.Error())
+			return
+		}
 
-	// 	branch_name, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: resp.Staffes[i].BranchId})
-	// 	if err != nil {
-	// 		h.handlerResponse(c, "storage.staff.Branch.getById", http.StatusInternalServerError, err.Error())
-	// 		return
-	// 	}
+		branch_name, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: v.BranchId})
+		if err != nil {
+			h.handlerResponse(c, "storage.staff.Branch.getById", http.StatusInternalServerError, err.Error())
+			return
+		}
 
-	// 	resp.Staffes[i].BranchId = branch_name.Name
-	// 	resp.Staffes[i].TarifId = tarif_type.Type
-	// }
+		resp.Staffes[i].BranchId = branch_name.Name
+		resp.Staffes[i].TarifId = tarif_type.Type
+	}
 
 	h.handlerResponse(c, "get list staff resposne", http.StatusOK, resp)
 }

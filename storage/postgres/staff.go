@@ -171,10 +171,10 @@ func (r *StaffRepo) GetList(ctx context.Context, req *models.StaffGetListRequest
 		err := rows.Scan(
 			&resp.Count,
 			&id,
-			&name,
-			&Type,
 			&BranchId,
 			&TarifId,
+			&Type,
+			&name,
 			&Balance,
 			&createdAt,
 			&updatedAt,
