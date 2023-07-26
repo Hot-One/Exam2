@@ -28,7 +28,7 @@ func (r *BusinessProcessRepo) GetTopWorker(ctx context.Context, req *models.Busi
 		where   = " WHERE deleted = false"
 		from    = ""
 		to      = ""
-		ordered = " ORDERED BY"
+		ordered = " ORDER BY"
 	)
 
 	query = `
@@ -40,14 +40,14 @@ func (r *BusinessProcessRepo) GetTopWorker(ctx context.Context, req *models.Busi
 				staff
 		`
 	if req.Search != "" {
-		where += ` AND type = ` + req.Search
+		where = fmt.Sprintf(" WHERE deleted = false AND type = '%s'", req.Search)
 	}
 	if req.From != "" {
-		from = fmt.Sprintf(" AND created_at BETWEEN %s", req.From)
+		from = fmt.Sprintf(" AND created_at BETWEEN '%s'", req.From)
 	}
 
 	if req.To != "" {
-		to = fmt.Sprintf(" AND %s", req.To)
+		to = fmt.Sprintf(" AND '%s'", req.To)
 	}
 
 	if req.Ordered != "" {
@@ -55,6 +55,7 @@ func (r *BusinessProcessRepo) GetTopWorker(ctx context.Context, req *models.Busi
 	}
 
 	query += where + from + to + ordered
+	fmt.Println(query)
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -68,8 +69,8 @@ func (r *BusinessProcessRepo) GetTopWorker(ctx context.Context, req *models.Busi
 		)
 
 		err := rows.Scan(
-			&Branch,
 			&name,
+			&Branch,
 			&Balance,
 		)
 
@@ -77,10 +78,65 @@ func (r *BusinessProcessRepo) GetTopWorker(ctx context.Context, req *models.Busi
 			return nil, err
 		}
 
-		resp.Staffes = append(resp.Staffes, &models.Staff{
-			Name:     name.String,
-			BranchId: Branch.String,
-			Balance:  Balance.Int64,
+		resp.Staffes = append(resp.Staffes, &models.BusinessProcess{
+			Name:    name.String,
+			Branch:  Branch.String,
+			Balance: Balance.Int64,
+		})
+	}
+
+	return resp, nil
+}
+
+func (r *BusinessProcessRepo) GetTopBranch(ctx context.Context,
+	req *models.BusinessProcessGetRequestBranch) (*models.BusinessProcessGetResponseBranch,
+	error) {
+	var (
+		resp    = &models.BusinessProcessGetResponseBranch{}
+		query   string
+		ordered = " ORDER BY"
+	)
+
+	query = `
+		SELECT
+			b.name as branch,
+			SUM(s.price) as total_sum,
+			CURRENT_DATE as DAY
+		FROM branch as b
+		JOIN sales as s ON s.branch_id = b.id
+		GROUP BY b.name
+	`
+
+	if req.Ordered != "" {
+		ordered = fmt.Sprintf(" ORDER BY total_sum %s", req.Ordered)
+	}
+
+	query += ordered
+	rows, err := r.db.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	for rows.Next() {
+		var (
+			BranchName sql.NullString
+			TotalPrice sql.NullInt64
+			Date       sql.NullString
+		)
+
+		err := rows.Scan(
+			&BranchName,
+			&TotalPrice,
+			&Date,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		resp.Branches = append(resp.Branches, &models.BusinessProcessBranch{
+			Name:       BranchName.String,
+			TotalPrice: TotalPrice.Int64,
+			Date:       Date.String,
 		})
 	}
 

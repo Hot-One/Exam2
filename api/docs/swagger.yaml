@@ -426,6 +426,48 @@ paths:
       summary: Get Top Worker
       tags:
       - BusinessProcess
+  /business_process_branch:
+    get:
+      consumes:
+      - application/json
+      description: Get Top Branch
+      operationId: get_top_branch
+      parameters:
+      - description: ordered_by
+        in: query
+        name: ordered_by
+        type: string
+      responses:
+        "200":
+          description: Success Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Get Top Branch
+      tags:
+      - BusinessProcess
   /sale:
     get:
       consumes:

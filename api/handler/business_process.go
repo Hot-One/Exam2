@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -36,15 +37,41 @@ func (h *handler) GetTopWorker(c *gin.Context) {
 		return
 	}
 
-	// for i, v := range resp.Staffes {
-	// 	branch_name, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: v.BranchId})
-	// 	if err != nil {
-	// 		h.handlerResponse(c, "storage.business_process.Branch.getById", http.StatusInternalServerError, err.Error())
-	// 		return
-	// 	}
+	for i, v := range resp.Staffes {
+		branch_name, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: v.Branch})
+		if err != nil {
+			h.handlerResponse(c, "storage.business_process.Branch.getById", http.StatusInternalServerError, err.Error())
+			return
+		}
 
-	// 	resp.Staffes[i].BranchId = branch_name.Name
-	// }
+		resp.Staffes[i].Branch = branch_name.Name
+	}
+
+	h.handlerResponse(c, "get list staff resposne", http.StatusOK, resp)
+}
+
+// GetList business_process_branch godoc
+// @ID get_top_branch
+// @Router /business_process_branch [GET]
+// @Summary Get Top Branch
+// @Description Get Top Branch
+// @Tags BusinessProcess
+// @Accept json
+// @Procedure json
+// @Param ordered_by query string false "ordered_by"
+// @Success 200 {object} Response{data=string} "Success Request"
+// @Response 400 {object} Response{data=string} "Bad Request"
+// @Failure 500 {object} Response{data=string} "Server error"
+func (h *handler) GetTopBranch(c *gin.Context) {
+
+	resp, err := h.strg.BusinessProcess().GetTopBranch(c.Request.Context(), &models.BusinessProcessGetRequestBranch{
+		Ordered: c.Query("ordered_by"),
+	})
+	if err != nil {
+		log.Println(err.Error())
+		h.handlerResponse(c, "storage.business_process_branch.get_list", http.StatusInternalServerError, err.Error())
+		return
+	}
 
 	h.handlerResponse(c, "get list staff resposne", http.StatusOK, resp)
 }

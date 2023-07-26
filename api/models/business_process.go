@@ -14,6 +14,21 @@ type BusinessProcessGetRequest struct {
 }
 
 type BusinessProcessGetResponse struct {
-	Count   int      `json:"count"`
-	Staffes []*Staff `json:"staffes"`
+	Count   int                `json:"count"`
+	Staffes []*BusinessProcess `json:"staffes"`
+}
+
+type BusinessProcessBranch struct {
+	Name       string `json:"branch_name"`
+	TotalPrice int64  `json:"total_price"`
+	Date       string `json:"date"`
+}
+
+type BusinessProcessGetRequestBranch struct {
+	Ordered string `json:"ordered"`
+}
+
+type BusinessProcessGetResponseBranch struct {
+	Count    int                      `json:"count"`
+	Branches []*BusinessProcessBranch `json:"branches"`
 }

@@ -58,4 +58,5 @@ type StaffTransactionRepoI interface {
 
 type BusinessProcessRepoI interface {
 	GetTopWorker(context.Context, *models.BusinessProcessGetRequest) (*models.BusinessProcessGetResponse, error)
+	GetTopBranch(ctx context.Context, req *models.BusinessProcessGetRequestBranch) (*models.BusinessProcessGetResponseBranch, error)
 }
