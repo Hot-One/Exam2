@@ -23,6 +23,40 @@ definitions:
       name:
         type: string
     type: object
+  models.SaleCreate:
+    properties:
+      branch_id:
+        type: string
+      cashier_id:
+        type: string
+      client_name:
+        type: string
+      payment_type:
+        type: string
+      price:
+        type: integer
+      shop_assistent_id:
+        type: string
+    type: object
+  models.SaleUpdate:
+    properties:
+      branch_id:
+        type: string
+      cashier_id:
+        type: string
+      client_name:
+        type: string
+      id:
+        type: string
+      payment_type:
+        type: string
+      price:
+        type: integer
+      shop_assistent_id:
+        type: string
+      status:
+        type: string
+    type: object
   models.StaffCreate:
     properties:
       branch_id:
@@ -302,6 +336,232 @@ paths:
       summary: Update Branch
       tags:
       - Branch
+  /sale:
+    get:
+      consumes:
+      - application/json
+      description: Get List Sale
+      operationId: get_list_sale
+      parameters:
+      - description: offset
+        in: query
+        name: offset
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: string
+      - description: search
+        in: query
+        name: search
+        type: string
+      responses:
+        "200":
+          description: Success Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Get List Sale
+      tags:
+      - Sale
+    post:
+      consumes:
+      - application/json
+      description: Create Sale
+      operationId: create_sale
+      parameters:
+      - description: SaleCreateRequest
+        in: body
+        name: sale
+        required: true
+        schema:
+          $ref: '#/definitions/models.SaleCreate'
+      responses:
+        "200":
+          description: Success Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Create Sale
+      tags:
+      - Sale
+  /sale/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Sale
+      operationId: delete_sale
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Delete Sale
+      tags:
+      - Sale
+    get:
+      consumes:
+      - application/json
+      description: Get By ID Sale
+      operationId: get_by_id_sale
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: Success Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Get By ID Sale
+      tags:
+      - Sale
+    put:
+      consumes:
+      - application/json
+      description: Update Sale
+      operationId: update_sale
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: SaleUpdateRequest
+        in: body
+        name: sale
+        required: true
+        schema:
+          $ref: '#/definitions/models.SaleUpdate'
+      responses:
+        "200":
+          description: Success Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Server error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Update Sale
+      tags:
+      - Sale
   /staff:
     get:
       consumes:

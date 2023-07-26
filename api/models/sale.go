@@ -8,8 +8,8 @@ type SaleCreate struct {
 	BranchId        string `json:"branch_id"`
 	ShopAssistentId string `json:"shop_assistent_id"`
 	CashierId       string `json:"cashier_id"`
-	Price           int    `json:"price"`
-	PaymentType     int64  `json:"payment_type"`
+	Price           int64  `json:"price"`
+	PaymentType     string `json:"payment_type"`
 	ClientName      string `json:"client_name"`
 }
 
@@ -18,8 +18,8 @@ type Sale struct {
 	BranchId        string `json:"branch_id"`
 	ShopAssistentId string `json:"shop_assistent_id"`
 	CashierId       string `json:"cashier_id"`
-	Price           int    `json:"price"`
-	PaymentType     int64  `json:"payment_type"`
+	Price           int64  `json:"price"`
+	PaymentType     string `json:"payment_type"`
 	ClientName      string `json:"client_name"`
 	Status          string `json:"status"`
 	CreatedAt       string `json:"created_at"`
@@ -46,6 +46,6 @@ type SaleGetListRequest struct {
 }
 
 type SaleGetListResponse struct {
-	Count  int     `json:"count"`
-	Salees []*Sale `json:"Salees"`
+	Count int     `json:"count"`
+	Sales []*Sale `json:"Salees"`
 }

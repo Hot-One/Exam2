@@ -29,7 +29,7 @@ func (r *SaleRepo) Create(ctx context.Context, req *models.SaleCreate) (string, 
 		query string
 	)
 	query = `
-		INSERT INTO staff(id, branch_id, shop_assistent_id, cashier_id, price, payment_type, client_name, updated_at)
+		INSERT INTO sale(id, branch_id, shop_assistent_id, cashier_id, price, payment_type, client_name, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7,NOW())
 	`
 	_, err := r.db.Exec(ctx, query,
@@ -81,7 +81,7 @@ func (r *SaleRepo) GetByID(ctx context.Context, req *models.SalePrimaryKey) (*mo
 			updated_at,
 			deleted,
 			deleted_at
-		FROM staff
+		FROM sale
 		WHERE id = $1
 	`
 
@@ -105,16 +105,18 @@ func (r *SaleRepo) GetByID(ctx context.Context, req *models.SalePrimaryKey) (*mo
 	}
 
 	return &models.Sale{
-		Id:        id.String,
-		Name:      name.String,
-		Type:      Type.String,
-		BranchId:  BranchId.String,
-		TarifId:   TarifId.String,
-		Balance:   Balance.Int64,
-		CreatedAt: createdAt.String,
-		UpdatedAt: updatedAt.String,
-		Deleted:   deleted.Bool,
-		DeletedAt: deletedAt.String,
+		Id:              id.String,
+		BranchId:        branchId.String,
+		ShopAssistentId: shopAssistentId.String,
+		CashierId:       cashierId.String,
+		Price:           price.Int64,
+		PaymentType:     paymentType.String,
+		ClientName:      clientName.String,
+		Status:          status.String,
+		CreatedAt:       createdAt.String,
+		UpdatedAt:       updatedAt.String,
+		Deleted:         deleted.Bool,
+		DeletedAt:       deletedAt.String,
 	}, nil
 }
 
@@ -133,15 +135,17 @@ func (r *SaleRepo) GetList(ctx context.Context, req *models.SaleGetListRequest) 
 			COUNT(*) OVER(),
 			id,
 			branch_id,
-			tarif_id,
-			type,
-			name,
-			balace,
+			shop_assistent_id,
+			cashier_id,
+			price,
+			payment_type,
+			client_name,
+			status,
 			created_at,
 			updated_at,
 			deleted,
 			deleted_at
-		FROM staff
+		FROM sale
 	`
 
 	if req.Offset > 0 {
@@ -165,26 +169,30 @@ func (r *SaleRepo) GetList(ctx context.Context, req *models.SaleGetListRequest) 
 
 	for rows.Next() {
 		var (
-			id        sql.NullString
-			name      sql.NullString
-			Type      sql.NullString
-			BranchId  sql.NullString
-			TarifId   sql.NullString
-			Balance   sql.NullInt64
-			createdAt sql.NullString
-			updatedAt sql.NullString
-			deleted   sql.NullBool
-			deletedAt sql.NullString
+			id              sql.NullString
+			branchId        sql.NullString
+			shopAssistentId sql.NullString
+			cashierId       sql.NullString
+			price           sql.NullInt64
+			paymentType     sql.NullString
+			clientName      sql.NullString
+			status          sql.NullString
+			createdAt       sql.NullString
+			updatedAt       sql.NullString
+			deleted         sql.NullBool
+			deletedAt       sql.NullString
 		)
 
 		err := rows.Scan(
 			&resp.Count,
 			&id,
-			&BranchId,
-			&TarifId,
-			&Type,
-			&name,
-			&Balance,
+			&branchId,
+			&shopAssistentId,
+			&cashierId,
+			&price,
+			&paymentType,
+			&clientName,
+			&status,
 			&createdAt,
 			&updatedAt,
 			&deleted,
@@ -195,17 +203,19 @@ func (r *SaleRepo) GetList(ctx context.Context, req *models.SaleGetListRequest) 
 			return nil, err
 		}
 
-		resp.Staffes = append(resp.Staffes, &models.Sale{
-			Id:        id.String,
-			Name:      name.String,
-			Type:      Type.String,
-			BranchId:  BranchId.String,
-			TarifId:   TarifId.String,
-			Balance:   Balance.Int64,
-			CreatedAt: createdAt.String,
-			UpdatedAt: updatedAt.String,
-			Deleted:   deleted.Bool,
-			DeletedAt: deletedAt.String,
+		resp.Sales = append(resp.Sales, &models.Sale{
+			Id:              id.String,
+			BranchId:        branchId.String,
+			ShopAssistentId: shopAssistentId.String,
+			CashierId:       cashierId.String,
+			Price:           price.Int64,
+			PaymentType:     paymentType.String,
+			ClientName:      clientName.String,
+			Status:          status.String,
+			CreatedAt:       createdAt.String,
+			UpdatedAt:       updatedAt.String,
+			Deleted:         deleted.Bool,
+			DeletedAt:       deletedAt.String,
 		})
 	}
 
@@ -221,25 +231,28 @@ func (r *SaleRepo) Update(ctx context.Context, req *models.SaleUpdate) (int64, e
 
 	query = `
 		UPDATE
-			staff
+			sale
 		SET
 			id = :id,
-			name = :name,
-			type = :type,
-			branch_id = :branch_id,
-			tarif_id = :tarif_id,
-			balance = :balance,
+			branch_id = :branch_id
+			shop_assistent_id = :shop_assistent_id
+			cashier_id = :cashier_id
+			price = :price
+			payment_type = :payment_type
+			client_name = :client_name
+			status = :status
 			updated_at = NOW()
 		WHERE id = :id
 	`
 
 	params = map[string]interface{}{
-		"id":        req.Id,
-		"name":      req.Name,
-		"type":      req.Type,
-		"branch_id": req.BranchId,
-		"tarif_id":  req.TarifId,
-		"balance":   req.Balance,
+		"branch_id":         req.BranchId,
+		"shop_assistent_id": req.ShopAssistentId,
+		"cashier_id":        req.CashierId,
+		"price":             req.Price,
+		"payment_type":      req.PaymentType,
+		"client_name":       req.ClientName,
+		"status":            req.Status,
 	}
 
 	query, args := helper.ReplaceQueryParams(query, params)
@@ -260,7 +273,7 @@ func (r *SaleRepo) Delete(ctx context.Context, req *models.SalePrimaryKey) (int6
 
 	query = `
 		UPDATE
-			staff
+			sale
 		SET
 			deleted = :deleted,
 			deleted_at = NOW(),
