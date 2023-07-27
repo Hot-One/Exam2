@@ -2,6 +2,7 @@ package models
 
 type BusinessProcess struct {
 	Name    string `json:"name"`
+	Type    string `json:"type"`
 	Branch  string `json:"branch"`
 	Balance int64  `json:"balace"`
 }

@@ -87,20 +87,22 @@ func (h *handler) GetByIdStaff(c *gin.Context) {
 		return
 	}
 
-	// tarif_type, err := h.strg.StaffTarif().GetByID(c.Request.Context(), &models.StaffTarifPrimaryKey{Id: resp.TarifId})
-	// if err != nil {
-	// 	h.handlerResponse(c, "storage.staff.stafftarif.getById", http.StatusInternalServerError, err.Error())
-	// 	return
-	// }
+	// Get Tarif of Staff
+	tarif_type, err := h.strg.StaffTarif().GetByID(c.Request.Context(), &models.StaffTarifPrimaryKey{Id: resp.TarifId})
+	if err != nil {
+		h.handlerResponse(c, "storage.staff.stafftarif.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
 
-	// branch_name, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: resp.BranchId})
-	// if err != nil {
-	// 	h.handlerResponse(c, "storage.staff.Branch.getById", http.StatusInternalServerError, err.Error())
-	// 	return
-	// }
+	// Get Branch Of Staff
+	branch_name, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: resp.BranchId})
+	if err != nil {
+		h.handlerResponse(c, "storage.staff.Branch.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
 
-	// resp.BranchId = branch_name.Name
-	// resp.TarifId = tarif_type.Type
+	resp.BranchId = branch_name.Name
+	resp.TarifId = tarif_type.Type
 
 	h.handlerResponse(c, "get by id staff resposne", http.StatusOK, resp)
 }
@@ -113,14 +115,14 @@ func (h *handler) GetByIdStaff(c *gin.Context) {
 // @Tags Staff
 // @Accept json
 // @Procedure json
+// @Param search query string false "name"
 // @Param offset query string false "offset"
 // @Param limit query string false "limit"
-// @Param search query string false "search"
 // @Param from query string false "from"
 // @Param to query string false "to"
-// @Param search_by_branch query string false "search_by_branch"
-// @Param search_by_tarif query string false "search_by_tarif"
-// @Param search_by_type query string false "search_by_type"
+// @Param search_branch query string false "branch"
+// @Param search_tarif query string false "tarif"
+// @Param search_type query string false "type"
 // @Success 200 {object} Response{data=string} "Success Request"
 // @Response 400 {object} Response{data=string} "Bad Request"
 // @Failure 500 {object} Response{data=string} "Server error"
@@ -153,8 +155,10 @@ func (h *handler) GetListStaff(c *gin.Context) {
 	resp, err := h.strg.Staff().GetList(c.Request.Context(), &models.StaffGetListRequest{
 		Offset:         offset,
 		Limit:          limit,
-		Search:         c.Query("search"),
-		SearchByBranch: c.Query("search_by_branch"),
+		Search:         c.Query("name"),
+		SearchByBranch: c.Query("branch"),
+		SearchByTarif:  c.Query("tarif"),
+		SearchByType:   c.Query("type"),
 		From:           from,
 		To:             to,
 	})
@@ -163,6 +167,7 @@ func (h *handler) GetListStaff(c *gin.Context) {
 		return
 	}
 
+	// Get Tarif and Branch of Staff
 	for i, v := range resp.Staffes {
 		tarif_type, err := h.strg.StaffTarif().GetByID(c.Request.Context(), &models.StaffTarifPrimaryKey{Id: v.TarifId})
 		if err != nil {
@@ -232,20 +237,22 @@ func (h *handler) UpdateStaff(c *gin.Context) {
 		return
 	}
 
-	// tarif_type, err := h.strg.StaffTarif().GetByID(c.Request.Context(), &models.StaffTarifPrimaryKey{Id: resp.TarifId})
-	// if err != nil {
-	// 	h.handlerResponse(c, "storage.staff.stafftarif.getById", http.StatusInternalServerError, err.Error())
-	// 	return
-	// }
+	// Get Tarif of Staff
+	tarif_type, err := h.strg.StaffTarif().GetByID(c.Request.Context(), &models.StaffTarifPrimaryKey{Id: resp.TarifId})
+	if err != nil {
+		h.handlerResponse(c, "storage.staff.stafftarif.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
 
-	// branch_name, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: resp.BranchId})
-	// if err != nil {
-	// 	h.handlerResponse(c, "storage.staff.Branch.getById", http.StatusInternalServerError, err.Error())
-	// 	return
-	// }
+	// Get Branch of Staff
+	branch_name, err := h.strg.Branch().GetByID(c.Request.Context(), &models.BranchPrimaryKey{Id: resp.BranchId})
+	if err != nil {
+		h.handlerResponse(c, "storage.staff.Branch.getById", http.StatusInternalServerError, err.Error())
+		return
+	}
 
-	// resp.BranchId = branch_name.Name
-	// resp.TarifId = tarif_type.Type
+	resp.BranchId = branch_name.Name
+	resp.TarifId = tarif_type.Type
 
 	h.handlerResponse(c, "create staff resposne", http.StatusAccepted, resp)
 }

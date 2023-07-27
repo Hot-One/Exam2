@@ -30,12 +30,8 @@ type Sale struct {
 
 type SaleUpdate struct {
 	Id              string `json:"id"`
-	BranchId        string `json:"branch_id"`
 	ShopAssistentId string `json:"shop_assistent_id"`
 	CashierId       string `json:"cashier_id"`
-	Price           int64  `json:"price"`
-	PaymentType     string `json:"payment_type"`
-	ClientName      string `json:"client_name"`
 	Status          string `json:"status"`
 }
 

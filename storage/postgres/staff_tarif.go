@@ -111,11 +111,12 @@ func (r *StaffTarifRepo) GetByID(ctx context.Context, req *models.StaffTarifPrim
 func (r *StaffTarifRepo) GetList(ctx context.Context, req *models.StaffTarifGetListRequest) (*models.StaffTarifGetListResponse, error) {
 
 	var (
-		resp   = &models.StaffTarifGetListResponse{}
-		query  string
-		where  = " WHERE deleted = false"
-		offset = " OFFSET 0"
-		limit  = " LIMIT 10"
+		resp    = &models.StaffTarifGetListResponse{}
+		query   string
+		where   = " WHERE deleted = false"
+		offset  = " OFFSET 0"
+		limit   = " LIMIT 10"
+		ordered = "ORDER BY created_at desc"
 	)
 
 	query = `
@@ -145,7 +146,7 @@ func (r *StaffTarifRepo) GetList(ctx context.Context, req *models.StaffTarifGetL
 		where += ` AND name ILIKE '%' || '` + req.Search + `' || '%'`
 	}
 
-	query += where + offset + limit
+	query += where + offset + limit + ordered
 
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {

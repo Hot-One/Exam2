@@ -123,11 +123,12 @@ func (r *SaleRepo) GetByID(ctx context.Context, req *models.SalePrimaryKey) (*mo
 func (r *SaleRepo) GetList(ctx context.Context, req *models.SaleGetListRequest) (*models.SaleGetListResponse, error) {
 
 	var (
-		resp   = &models.SaleGetListResponse{}
-		query  string
-		where  = " WHERE deleted = false"
-		offset = " OFFSET 0"
-		limit  = " LIMIT 10"
+		resp    = &models.SaleGetListResponse{}
+		query   string
+		where   = " WHERE deleted = false"
+		offset  = " OFFSET 0"
+		limit   = " LIMIT 10"
+		ordered = "ORDER BY created_at desc"
 	)
 
 	query = `
@@ -160,7 +161,7 @@ func (r *SaleRepo) GetList(ctx context.Context, req *models.SaleGetListRequest) 
 		where += ` AND name ILIKE '%' || '` + req.Search + `' || '%'`
 	}
 
-	query += where + offset + limit
+	query += where + offset + limit + ordered
 
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
@@ -233,12 +234,8 @@ func (r *SaleRepo) Update(ctx context.Context, req *models.SaleUpdate) (int64, e
 			sales
 		SET
 			id = :id,
-			branch_id = :branch_id,
 			shop_assistent_id = :shop_assistent_id,
 			cashier_id = :cashier_id,
-			price = :price,
-			payment_type = :payment_type,
-			client_name = :client_name,
 			status = :status,
 			updated_at = NOW()
 		WHERE id = :id
@@ -246,12 +243,8 @@ func (r *SaleRepo) Update(ctx context.Context, req *models.SaleUpdate) (int64, e
 
 	params = map[string]interface{}{
 		"id":                req.Id,
-		"branch_id":         req.BranchId,
 		"shop_assistent_id": req.ShopAssistentId,
 		"cashier_id":        req.CashierId,
-		"price":             req.Price,
-		"payment_type":      req.PaymentType,
-		"client_name":       req.ClientName,
 		"status":            req.Status,
 	}
 

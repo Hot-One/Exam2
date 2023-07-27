@@ -38,9 +38,13 @@ type StaffTransactionUpdate struct {
 }
 
 type StaffTransactionGetListRequest struct {
-	Offset int    `json:"offset"`
-	Limit  int    `json:"limit"`
-	Search string `json:"search"`
+	Offset      int    `json:"offset"`
+	Limit       int    `json:"limit"`
+	Search      string `json:"search"`
+	SearchSales string `json:"search_sales"`
+	SearchType  string `json:"search_type"`
+	SearchStaff string `json:"search_staff"`
+	Order       string `json:"order"`
 }
 
 type StaffTransactionGetListResponse struct {

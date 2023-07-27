@@ -132,11 +132,12 @@ func (r *StaffTransactionRepo) GetByID(ctx context.Context, req *models.StaffTra
 
 func (r *StaffTransactionRepo) GetList(ctx context.Context, req *models.StaffTransactionGetListRequest) (*models.StaffTransactionGetListResponse, error) {
 	var (
-		resp   = &models.StaffTransactionGetListResponse{}
-		query  string
-		where  = " WHERE deleted = false"
-		offset = " OFFSET 0"
-		limit  = " LIMIT 10"
+		resp    = &models.StaffTransactionGetListResponse{}
+		query   string
+		where   = " WHERE deleted = false"
+		offset  = " OFFSET 0"
+		limit   = " LIMIT 10"
+		ordered = "ORDER BY amount"
 	)
 
 	query = `
@@ -168,7 +169,23 @@ func (r *StaffTransactionRepo) GetList(ctx context.Context, req *models.StaffTra
 		where += ` AND name ILIKE '%' || '` + req.Search + `' || '%'`
 	}
 
-	query += where + offset + limit
+	if req.SearchSales != "" {
+		where += ` AND sales_id ILIKE '%' || '` + req.SearchSales + `' || '%'`
+	}
+
+	if req.SearchType != "" {
+		where += ` AND type ILIKE '%' || '` + req.SearchType + `' || '%'`
+	}
+
+	if req.SearchStaff != "" {
+		where += ` AND staff_id ILIKE '%' || '` + req.SearchStaff + `' || '%'`
+	}
+
+	if req.Order != "" {
+		ordered += fmt.Sprintf("ORDER BY amount %s", req.Order)
+	}
+
+	query += where + offset + limit + ordered
 
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {

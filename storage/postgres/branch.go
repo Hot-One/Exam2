@@ -102,11 +102,12 @@ func (r *BranchRepo) GetByID(ctx context.Context, req *models.BranchPrimaryKey) 
 func (r *BranchRepo) GetList(ctx context.Context, req *models.BranchGetListRequest) (*models.BranchGetListResponse, error) {
 
 	var (
-		resp   = &models.BranchGetListResponse{}
-		query  string
-		where  = " WHERE deleted = false"
-		offset = " OFFSET 0"
-		limit  = " LIMIT 10"
+		resp    = &models.BranchGetListResponse{}
+		query   string
+		where   = " WHERE deleted = false"
+		offset  = " OFFSET 0"
+		limit   = " LIMIT 10"
+		ordered = "ORDER BY created_at desc"
 	)
 
 	query = `
@@ -138,7 +139,7 @@ func (r *BranchRepo) GetList(ctx context.Context, req *models.BranchGetListReque
 		where += ` AND address ILIKE '%' || '` + req.Search + `' || '%'`
 	}
 
-	query += where + offset + limit
+	query += where + offset + limit + ordered
 
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {

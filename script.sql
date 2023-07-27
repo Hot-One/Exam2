@@ -16,6 +16,7 @@ WHERE
 
 SELECT
     name,
+    type,
     branch_id,
     balace
 FROM
@@ -43,3 +44,16 @@ FROM branch as b
 JOIN sales as s ON s.branch_id = b.id
 GROUP BY b.name
 ORDER BY total_sum desc
+
+SELECT
+        b.name as branch,
+        SUM(s.price) as total_sum,
+        CURRENT_DATE as DAY
+FROM branch as b
+JOIN sales as s ON s.branch_id = b.id
+WHERE deleted = false 
+GROUP BY b.name
+ORDER BY total_sum desc
+
+
+where += `AND name ILIKE '%' || ` + req.Search + ` || '%' OR branch_id ILIKE '%' || ` + req.Search + ` || '%' OR tarif_id ILIKE '%' || ` + req.Search + ` || '%' OR type ILIKE '%' || ` + req.Search + ` || '%'`

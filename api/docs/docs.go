@@ -1020,6 +1020,12 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
+                        "description": "name",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
                         "description": "offset",
                         "name": "offset",
                         "in": "query"
@@ -1028,12 +1034,6 @@ const docTemplate = `{
                         "type": "string",
                         "description": "limit",
                         "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "search",
-                        "name": "search",
                         "in": "query"
                     },
                     {
@@ -1050,20 +1050,20 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "search_by_branch",
-                        "name": "search_by_branch",
+                        "description": "branch",
+                        "name": "search_branch",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "search_by_tarif",
-                        "name": "search_by_tarif",
+                        "description": "tarif",
+                        "name": "search_tarif",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "search_by_type",
-                        "name": "search_by_type",
+                        "description": "type",
+                        "name": "search_type",
                         "in": "query"
                     }
                 ],
@@ -1877,6 +1877,30 @@ const docTemplate = `{
                         "description": "search",
                         "name": "search",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "salesId",
+                        "name": "search_sales",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "type",
+                        "name": "search_type",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "staffId",
+                        "name": "search_staff",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "order_by",
+                        "name": "order",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -2319,23 +2343,11 @@ const docTemplate = `{
         "models.SaleUpdate": {
             "type": "object",
             "properties": {
-                "branch_id": {
-                    "type": "string"
-                },
                 "cashier_id": {
-                    "type": "string"
-                },
-                "client_name": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
-                },
-                "payment_type": {
-                    "type": "string"
-                },
-                "price": {
-                    "type": "integer"
                 },
                 "shop_assistent_id": {
                     "type": "string"

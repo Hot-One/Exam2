@@ -212,6 +212,10 @@ func (h *handler) GetByIdStaffTransaction(c *gin.Context) {
 // @Param offset query string false "offset"
 // @Param limit query string false "limit"
 // @Param search query string false "search"
+// @Param search_sales query string false "salesId"
+// @Param search_type query string false "type"
+// @Param search_staff query string false "staffId"
+// @Param order query string false "order_by"
 // @Success 200 {object} Response{data=string} "Success Request"
 // @Response 400 {object} Response{data=string} "Bad Request"
 // @Failure 500 {object} Response{data=string} "Server error"
@@ -230,9 +234,13 @@ func (h *handler) GetListStaffTransaction(c *gin.Context) {
 	}
 
 	resp, err := h.strg.StaffTransaction().GetList(c.Request.Context(), &models.StaffTransactionGetListRequest{
-		Offset: offset,
-		Limit:  limit,
-		Search: c.Query("search"),
+		Offset:      offset,
+		Limit:       limit,
+		Search:      c.Query("search"),
+		SearchSales: c.Query("salesId"),
+		SearchType:  c.Query("type"),
+		SearchStaff: c.Query("staffId"),
+		Order:       c.Query("order_by"),
 	})
 	if err != nil {
 		h.handlerResponse(c, "storage.staff_transaction.get_list", http.StatusInternalServerError, err.Error())

@@ -40,18 +40,10 @@ definitions:
     type: object
   models.SaleUpdate:
     properties:
-      branch_id:
-        type: string
       cashier_id:
-        type: string
-      client_name:
         type: string
       id:
         type: string
-      payment_type:
-        type: string
-      price:
-        type: integer
       shop_assistent_id:
         type: string
       status:
@@ -701,6 +693,10 @@ paths:
       description: Get List Staff
       operationId: get_list_staff
       parameters:
+      - description: name
+        in: query
+        name: search
+        type: string
       - description: offset
         in: query
         name: offset
@@ -708,10 +704,6 @@ paths:
       - description: limit
         in: query
         name: limit
-        type: string
-      - description: search
-        in: query
-        name: search
         type: string
       - description: from
         in: query
@@ -721,17 +713,17 @@ paths:
         in: query
         name: to
         type: string
-      - description: search_by_branch
+      - description: branch
         in: query
-        name: search_by_branch
+        name: search_branch
         type: string
-      - description: search_by_tarif
+      - description: tarif
         in: query
-        name: search_by_tarif
+        name: search_tarif
         type: string
-      - description: search_by_type
+      - description: type
         in: query
-        name: search_by_type
+        name: search_type
         type: string
       responses:
         "200":
@@ -1184,6 +1176,22 @@ paths:
       - description: search
         in: query
         name: search
+        type: string
+      - description: salesId
+        in: query
+        name: search_sales
+        type: string
+      - description: type
+        in: query
+        name: search_type
+        type: string
+      - description: staffId
+        in: query
+        name: search_staff
+        type: string
+      - description: order_by
+        in: query
+        name: order
         type: string
       responses:
         "200":

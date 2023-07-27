@@ -34,6 +34,7 @@ func (r *BusinessProcessRepo) GetTopWorker(ctx context.Context, req *models.Busi
 	query = `
 			SELECT
 				name,
+				type,
 				branch_id,
 				balace
 			FROM
@@ -64,12 +65,14 @@ func (r *BusinessProcessRepo) GetTopWorker(ctx context.Context, req *models.Busi
 	for rows.Next() {
 		var (
 			name    sql.NullString
+			Type    sql.NullString
 			Branch  sql.NullString
 			Balance sql.NullInt64
 		)
 
 		err := rows.Scan(
 			&name,
+			&Type,
 			&Branch,
 			&Balance,
 		)
@@ -80,6 +83,7 @@ func (r *BusinessProcessRepo) GetTopWorker(ctx context.Context, req *models.Busi
 
 		resp.Staffes = append(resp.Staffes, &models.BusinessProcess{
 			Name:    name.String,
+			Type:    Type.String,
 			Branch:  Branch.String,
 			Balance: Balance.Int64,
 		})
