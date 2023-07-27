@@ -170,7 +170,6 @@ func (r *StaffRepo) GetList(ctx context.Context, req *models.StaffGetListRequest
 	}
 
 	query += where + from + to + offset + limit
-
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 
 	uuid "github.com/google/uuid"
 	"github.com/jackc/pgx/v4/pgxpool"
@@ -56,7 +55,103 @@ func (r *StaffTransactionRepo) Create(ctx context.Context, req *models.StaffTran
 	)
 
 	if err != nil {
-		log.Println("Here", err.Error())
+		return "", err
+	}
+	var (
+		total        sql.NullInt64
+		total_amount sql.NullInt64
+		date         sql.NullString
+		where1       string
+		group        string
+	)
+
+	query1 := `
+		SELECT
+			COUNT(id) as total,
+			SUM(amount),
+			DATE(created_at) as dates
+		FROM
+			staff_transaction
+	`
+	where1 = fmt.Sprintf(" WHERE deleted = false AND staff_id = '%s'AND source_type = 'Sales'AND DATE(created_at) = CURRENT_DATE", req.StaffId)
+	group = fmt.Sprintf(" GROUP BY dates")
+	query1 += where1 + group
+	err = r.db.QueryRow(ctx, query1).Scan(
+		&total,
+		&total_amount,
+		&date,
+	)
+	if err != nil {
+		fmt.Println("Query 1:", err.Error())
+		return "", err
+	}
+	var (
+		const_total        = int(total.Int64)
+		const_total_amount = int(total_amount.Int64)
+	)
+	if const_total >= 10 && const_total_amount >= 1_500_000 {
+		// Update Staff Transaction source_type
+		where2 := ""
+		query2 := `
+			UPDATE 
+				staff_transaction
+			SET
+				source_type = 'Bonus'
+		`
+		where2 = fmt.Sprintf(" WHERE staff_id = '%s'", req.StaffId)
+		query2 += where2
+		_, err = r.db.Exec(ctx, query2)
+		if err != nil {
+			fmt.Println("Query 2:", err.Error())
+			return "", err
+		}
+		// Update staff balace
+		where3 := fmt.Sprintf(" WHERE deleted = false AND id = '%s'", req.StaffId)
+		var (
+			balance int
+		)
+		query3 := `
+			SELECT
+				balace
+			FROM
+				staff
+		`
+		query3 += where3
+		err = r.db.QueryRow(ctx, query3).Scan(&balance)
+		if err != nil {
+			fmt.Println("Query 3:", err.Error())
+			return "", err
+		}
+		balance += 50000
+		var (
+			query4 string
+			params map[string]interface{}
+		)
+
+		query4 = `
+			UPDATE
+				staff
+			SET
+				id = :id,
+				balace = :balace
+			WHERE id = :id
+		`
+
+		params = map[string]interface{}{
+			"id":     req.StaffId,
+			"balace": balance,
+		}
+
+		query, args := helper.ReplaceQueryParams(query4, params)
+		fmt.Println(query)
+		_, err := r.db.Exec(ctx, query, args...)
+		if err != nil {
+			fmt.Println("Query 4:", err.Error())
+			return "", err
+		}
+	}
+
+	if err != nil {
 		return "", err
 	}
 	return id, nil
@@ -137,7 +232,7 @@ func (r *StaffTransactionRepo) GetList(ctx context.Context, req *models.StaffTra
 		where   = " WHERE deleted = false"
 		offset  = " OFFSET 0"
 		limit   = " LIMIT 10"
-		ordered = "ORDER BY amount"
+		ordered = " ORDER BY amount"
 	)
 
 	query = `
@@ -182,11 +277,11 @@ func (r *StaffTransactionRepo) GetList(ctx context.Context, req *models.StaffTra
 	}
 
 	if req.Order != "" {
-		ordered += fmt.Sprintf("ORDER BY amount %s", req.Order)
+		ordered += fmt.Sprintf(" ORDER BY amount %s", req.Order)
 	}
 
-	query += where + offset + limit + ordered
-
+	query += where + ordered + offset + limit
+	fmt.Println(query)
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
 		return nil, err
@@ -267,6 +362,7 @@ func (r *StaffTransactionRepo) Update(ctx context.Context, req *models.StaffTran
 	`
 
 	params = map[string]interface{}{
+		"id":          req.Id,
 		"sales_id":    req.SaleId,
 		"type":        req.Type,
 		"source_type": req.SourceType,

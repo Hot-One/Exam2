@@ -128,7 +128,7 @@ func (r *SaleRepo) GetList(ctx context.Context, req *models.SaleGetListRequest) 
 		where   = " WHERE deleted = false"
 		offset  = " OFFSET 0"
 		limit   = " LIMIT 10"
-		ordered = "ORDER BY created_at desc"
+		ordered = " ORDER BY created_at desc"
 	)
 
 	query = `
@@ -161,7 +161,7 @@ func (r *SaleRepo) GetList(ctx context.Context, req *models.SaleGetListRequest) 
 		where += ` AND name ILIKE '%' || '` + req.Search + `' || '%'`
 	}
 
-	query += where + offset + limit + ordered
+	query += where + ordered + offset + limit
 
 	rows, err := r.db.Query(ctx, query)
 	if err != nil {
