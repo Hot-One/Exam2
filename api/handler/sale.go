@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -68,6 +69,7 @@ func (h *handler) CreateSale(c *gin.Context) {
 		"amount":      resp.Price,
 	}
 	_, err = helper.DoRequest("http://localhost:8080/staff_transaction", "POST", body)
+	fmt.Println(len(resp.ShopAssistentId))
 	if len(resp.ShopAssistentId) > 0 {
 		body = map[string]interface{}{
 			"sales_id":    resp.Id,

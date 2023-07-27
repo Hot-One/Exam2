@@ -65,5 +65,29 @@ FROM
 WHERE deleted = false 
 AND staff_id = 'ba131c9d-64b2-4690-98de-ab51fc265af8'
 AND source_type = 'Sales'
-AND DATE(created_at) = CURRENT_DATE
+AND DATE(created_at) >= CURRENT_DATE
 GROUP BY dates;
+
+SELECT
+    COUNT(id) as total,
+    SUM(amount),
+    DATE(created_at) as dates
+FROM
+    staff_transaction
+WHERE deleted = false 
+AND staff_id = 'a9dddaed-aab5-4624-bf27-f549e7acf2e4'
+AND source_type = 'Sales'
+AND DATE(created_at) > CURRENT_DATE
+GROUP BY dates;
+
+SELECT
+        COUNT(id) as total,
+        SUM(amount),
+        DATE(created_at) as dates
+FROM
+        staff_transaction
+WHERE deleted = false 
+AND staff_id = 'a9dddaed-aab5-4624-bf27-f549e7acf2e4'
+AND source_type = 'Sales'
+AND DATE(created_at) = CURRENT_DATE 
+GROUP BY dates

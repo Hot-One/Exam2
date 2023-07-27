@@ -24,6 +24,7 @@ func NewSaleRepo(db *pgxpool.Pool) *SaleRepo {
 }
 
 func (r *SaleRepo) Create(ctx context.Context, req *models.SaleCreate) (string, error) {
+	fmt.Println(req)
 	var (
 		id    = uuid.New().String()
 		query string
@@ -35,7 +36,7 @@ func (r *SaleRepo) Create(ctx context.Context, req *models.SaleCreate) (string, 
 	_, err := r.db.Exec(ctx, query,
 		id,
 		req.BranchId,
-		req.ShopAssistentId,
+		helper.NewNullString(req.ShopAssistentId),
 		req.CashierId,
 		req.Price,
 		req.PaymentType,
